@@ -15,6 +15,8 @@ public:
     void adjust(const DateTime& dt);
     uint8_t isrunning(void);
     DateTime now();
+	DateTime get_alarm(int alarm);
+	void set_alarm(int alarm, const DateTime& dt, char flags);
 
 protected:
     void cs(int _value)

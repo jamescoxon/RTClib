@@ -18,6 +18,11 @@ const int CONTROL_STATUS_W = 0x8f;
 const int SECONDS_R = 0x00;
 const int SECONDS_W = 0x80;
 
+const int ALARM1_R = 0x07;
+const int ALARM1_W = 0x87;
+const int ALARM2_R = 0x0B;
+const int ALARM2_W = 0x8B;
+
 // Bits we use
 const int EOSC = 7;
 const int OSF = 7;
@@ -68,6 +73,30 @@ void RTC_DS3234::adjust(const DateTime& dt)
     SPI.transfer(bin2bcd(dt.year() - 2000));
     cs(HIGH);
 
+}
+
+DateTime RTC_DS3234::get_alarm(int alarm)
+{
+	cs(LOW);
+	SPI.transfer((alarm == 1 ? ALARM1_R : ALARM2_R));
+	uint8_t ss = bcd2bin(SPI.transfer(-1) & 0x7F);
+	uint8_t mm = bcd2bin(SPI.transfer(-1) & 0x7F);
+	uint8_t hh = bcd2bin(SPI.transfer(-1) & 0x7F);
+	uint8_t d = bcd2bin(SPI.transfer(-1) & 0x7F);
+	cs(HIGH);
+	
+	return DateTime (0, 0, d, hh, mm, ss);
+}
+
+void RTC_DS3234::set_alarm(int alarm, const DateTime& dt, char flags)
+{
+    cs(LOW);
+    SPI.transfer((alarm == 1 ? ALARM1_W : ALARM2_W));
+    SPI.transfer(((flags & 1) << 7) | bin2bcd(dt.second())); flags >>= 1;
+    SPI.transfer(((flags & 1) << 7) | bin2bcd(dt.minute())); flags >>= 1;
+    SPI.transfer(((flags & 1) << 7) | bin2bcd(dt.hour()));   flags >>= 1;
+    SPI.transfer(((flags & 1) << 7) | bin2bcd(dt.day()));    flags >>= 1;
+    cs(HIGH);
 }
 
 DateTime RTC_DS3234::now()

@@ -1,0 +1,3 @@
+Fork of manicbug's RTClib which is a fork of Jeelab's RTC library. This version
+adds support for DS3234 SPI RTC which has a number of additional features such
+as alarms and square wave output.

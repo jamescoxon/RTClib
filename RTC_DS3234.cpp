@@ -1,5 +1,7 @@
 // Code by JeeLabs http://news.jeelabs.org/code/
 // Released to the public domain! Enjoy!
+// Additions by James Coxon jacoxon@googlemail.com and Phil Heron phil@sanslogic.co.uk
+// Added code to initiate, set, get and reset the alarms on the DS3234
 
 #include <avr/pgmspace.h>
 #include <WProgram.h>
@@ -27,17 +29,24 @@ const int ALARM2_W = 0x8B;
 const int EOSC = 7;
 const int OSF = 7;
 
-uint8_t RTC_DS3234::begin(void)
+uint8_t RTC_DS3234::begin(uint8_t al1, uint8_t al2)
 {
     pinMode(cs_pin,OUTPUT);
     cs(HIGH);
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE1);
 
-    //Enable oscillator, disable square wave, alarms
+    //Enable oscillator, disable square wave, enable alarms
     cs(LOW);
     SPI.transfer(CONTROL_W);
-    SPI.transfer(0x0);
+	if(al1 == 1 && al2 ==1)
+		{ SPI.transfer(0x1F); }
+	else if(al1 == 1 && al2 ==0)
+		{ SPI.transfer(0x1D); }
+	else if(al1 == 0 && al2 ==1)
+		{ SPI.transfer(0x1E); }
+	else 
+		{ SPI.transfer(0x1D); }
     cs(HIGH);
     delay(1);
 
@@ -97,6 +106,15 @@ void RTC_DS3234::set_alarm(int alarm, const DateTime& dt, char flags)
     SPI.transfer(((flags & 1) << 7) | bin2bcd(dt.hour()));   flags >>= 1;
     SPI.transfer(((flags & 1) << 7) | bin2bcd(dt.day()));    flags >>= 1;
     cs(HIGH);
+}
+
+void RTC_DS3234::reset_alarm()
+{
+	//Clear oscilator stop flag, 32kHz pin
+    cs(LOW);
+    SPI.transfer(CONTROL_STATUS_W);
+    SPI.transfer(0x0);
+    cs(HIGH);	
 }
 
 DateTime RTC_DS3234::now()

@@ -11,7 +11,7 @@ class RTC_DS3234
 {
 public:
     RTC_DS3234(int _cs_pin): cs_pin(_cs_pin) {}
-    uint8_t begin(uint8_t al1, uint8_t al2);
+    uint8_t begin();
     void adjust(const DateTime& dt);
     uint8_t isrunning(void);
     DateTime now();
@@ -20,6 +20,7 @@ public:
 	void reset_alarm();
 	uint8_t get_control();
 	uint8_t get_status();
+	void setup(uint8_t al1, uint8_t al2);
 
 protected:
     void cs(int _value)

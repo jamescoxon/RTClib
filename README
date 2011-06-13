@@ -1,3 +1,73 @@
 Fork of manicbug's RTClib which is a fork of Jeelab's RTC library. This version
 adds support for DS3234 SPI RTC which has a number of additional features such
 as alarms and square wave output.
+
+
+Library options:
+
+
+// Create an RTC instance, using the chip select pin it's connected to
+RTC_DS3234 RTC(10);
+
+// Start up the RTC
+RTC.begin();
+
+// Check that the RTC is connected
+RTC.isrunning()
+
+// Set the time of the RTC
+
+RTC.adjust(DateTime(2011,6,8,22,56,00));
+
+			year,month,day,hour,minute,second
+
+Nice way to set the RTC is with the date and time the sketch was compiled (thanks LadyAda)
+RTC.adjust(DateTime(__DATE__, __TIME__));
+
+// Setup the alarms, (uint8_t al1, uint8_t al2), al1 = 1 is on and = 0 is off
+RTC.setup();
+
+//Set the actual alarm times, DS3234 has 2 alarms with different potential settings
+RTC.set_alarm(1, DateTime(__DATE__, __TIME__), 0x0E);
+RTC.set_alarm(2, DateTime(__DATE__, __TIME__), 0x07);
+
+The final hex character corresponds with how the alarm should function e.g. alarm 2:
+  //0x07 = every minute (on 00 seconds)
+  //0x06 = when minutes match ? will this trigger for the whole minute, the main loop will function longer then just 1 minute so shouldn't be a problem
+  //0x04 = when hours and minutes match
+  //0x08 = when day, hours, and minutes match 
+  
+Best check the datasheet for the DS3234
+
+// Once the alarm has triggered it is necessary to reset the alarm
+RTC.reset_alarm();
+
+// Check the alarm date and time
+DateTime alarm1 = RTC.get_alarm(1);
+
+// Get the actual time and date from the RTC
+DateTime now = RTC.now();
+
+// Print the DateTime data (e.g. the actual RTC time or alarm time
+Serial.print("Alarm 1 = ");
+Serial.print(alarm1.year(), DEC);
+Serial.print('/');
+Serial.print(alarm1.month(), DEC);
+Serial.print('/');
+Serial.print(alarm1.day(), DEC);
+Serial.print(' ');
+Serial.print(alarm1.hour(), DEC);
+Serial.print(':');
+Serial.print(alarm1.minute(), DEC);
+Serial.print(':');
+Serial.print(alarm1.second(), DEC);
+Serial.println(); 
+
+// Read the control register
+control = RTC.get_control();
+Serial.println(control, HEX);
+Serial.println(control, BIN); 
+
+
+
+

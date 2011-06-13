@@ -29,14 +29,27 @@ const int ALARM2_W = 0x8B;
 const int EOSC = 7;
 const int OSF = 7;
 
-uint8_t RTC_DS3234::begin(uint8_t al1, uint8_t al2)
+uint8_t RTC_DS3234::begin()
 {
     pinMode(cs_pin,OUTPUT);
     cs(HIGH);
     SPI.setBitOrder(MSBFIRST);
     SPI.setDataMode(SPI_MODE1);
+    delay(1);
 
-    //Enable oscillator, disable square wave, enable alarms
+    //Clear oscilator stop flag, 32kHz pin
+    cs(LOW);
+    SPI.transfer(CONTROL_STATUS_W);
+    SPI.transfer(0x0);
+    cs(HIGH);
+    delay(1);
+
+    return 1;
+}
+
+void RTC_DS3234::setup(uint8_t al1, uint8_t al2)
+{
+	//Enable oscillator, disable square wave, enable alarms
     cs(LOW);
     SPI.transfer(CONTROL_W);
 	if(al1 == 1 && al2 ==1)
@@ -48,16 +61,6 @@ uint8_t RTC_DS3234::begin(uint8_t al1, uint8_t al2)
 	else
 	{ SPI.transfer(0x1D); }
 	cs(HIGH);
-    delay(1);
-
-    //Clear oscilator stop flag, 32kHz pin
-    cs(LOW);
-    SPI.transfer(CONTROL_STATUS_W);
-    SPI.transfer(0x0);
-    cs(HIGH);
-    delay(1);
-
-    return 1;
 }
 
 uint8_t RTC_DS3234::isrunning(void)

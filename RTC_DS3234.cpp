@@ -40,14 +40,14 @@ uint8_t RTC_DS3234::begin(uint8_t al1, uint8_t al2)
     cs(LOW);
     SPI.transfer(CONTROL_W);
 	if(al1 == 1 && al2 ==1)
-		{ SPI.transfer(0x1F); }
+	{ SPI.transfer(0x1F); }
 	else if(al1 == 1 && al2 ==0)
-		{ SPI.transfer(0x1D); }
+	{ SPI.transfer(0x1D); }
 	else if(al1 == 0 && al2 ==1)
-		{ SPI.transfer(0x1E); }
-	else 
-		{ SPI.transfer(0x1D); }
-    cs(HIGH);
+	{ SPI.transfer(0x1E); }
+	else
+	{ SPI.transfer(0x1D); }
+	cs(HIGH);
     delay(1);
 
     //Clear oscilator stop flag, 32kHz pin
@@ -82,6 +82,26 @@ void RTC_DS3234::adjust(const DateTime& dt)
     SPI.transfer(bin2bcd(dt.year() - 2000));
     cs(HIGH);
 
+}
+
+uint8_t RTC_DS3234::get_control()
+{
+	uint8_t data;
+	cs(LOW);
+	SPI.transfer(CONTROL_R);
+	data = SPI.transfer(-1);
+	cs(HIGH);
+	return data;
+}
+
+uint8_t RTC_DS3234::get_status()
+{
+	uint8_t data;
+	cs(LOW);
+	SPI.transfer(CONTROL_STATUS_R);
+	data = SPI.transfer(-1);
+	cs(HIGH);
+	return data;
 }
 
 DateTime RTC_DS3234::get_alarm(int alarm)

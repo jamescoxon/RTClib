@@ -18,6 +18,8 @@ public:
 	DateTime get_alarm(int alarm);
 	void set_alarm(int alarm, const DateTime& dt, char flags);
 	void reset_alarm();
+	uint8_t get_control();
+	uint8_t get_status();
 
 protected:
     void cs(int _value)

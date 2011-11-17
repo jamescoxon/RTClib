@@ -23,10 +23,7 @@ public:
 	void setup(uint8_t al1, uint8_t al2);
 
 protected:
-    void cs(int _value)
-    {
-        digitalWrite(cs_pin,_value);
-    }
+    void cs(int _value);
 
 private:
     int cs_pin;
@@ -34,4 +31,4 @@ private:
 
 #endif // __RTC_DS3234_H__
 
-// vim:ci:sw=4 sts=4 ft=cpp
+// vim:ai:cin:sw=4 sts=4 ft=cpp

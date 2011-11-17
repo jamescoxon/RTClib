@@ -34,6 +34,9 @@ uint8_t RTC_DS3234::begin()
     pinMode(cs_pin,OUTPUT);
     cs(HIGH);
     SPI.setBitOrder(MSBFIRST);
+
+    //Ugh!  In order to get this to interop with other SPI devices,
+    //This has to be done in cs()
     SPI.setDataMode(SPI_MODE1);
     delay(1);
 
@@ -61,6 +64,12 @@ void RTC_DS3234::setup(uint8_t al1, uint8_t al2)
 	else
 	{ SPI.transfer(0x1D); }
 	cs(HIGH);
+}
+
+void RTC_DS3234::cs(int _value)
+{
+    SPI.setDataMode(SPI_MODE1);
+    digitalWrite(cs_pin,_value);
 }
 
 uint8_t RTC_DS3234::isrunning(void)
@@ -156,4 +165,4 @@ DateTime RTC_DS3234::now()
     return DateTime (y, m, d, hh, mm, ss);
 }
 
-// vim:ci:sw=4 sts=4 ft=cpp
+// vim:ai:cin:sw=4 sts=4 ft=cpp

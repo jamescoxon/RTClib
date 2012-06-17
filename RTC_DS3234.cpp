@@ -3,8 +3,13 @@
 // Additions by James Coxon jacoxon@googlemail.com and Phil Heron phil@sanslogic.co.uk
 // Added code to initiate, set, get and reset the alarms on the DS3234
 
-#include <avr/pgmspace.h>
+#if ARDUINO < 100
 #include <WProgram.h>
+#else
+#include <Arduino.h>
+#endif
+
+#include <avr/pgmspace.h>
 #include <SPI.h>
 #include "RTClib.h"
 #include "RTC_DS3234.h"
